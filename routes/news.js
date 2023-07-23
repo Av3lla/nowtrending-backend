@@ -3,7 +3,6 @@ const router = express.Router();
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-/* GET home page. */
 router.get('/:press', async (req, res) => {
   try {
     const press = req.params['press'];
@@ -38,12 +37,12 @@ router.get('/:press', async (req, res) => {
     const response = await getNews(pressIndex);
     if (response === 404) {
       res.status(400).json({
-        status : "fail",
+        status : "400",
         message : "400 Bad Request"
       });
     } else {
       res.status(200).json({
-        status : "success",
+        status : "200",
         data : {
           press : press,
           logo: logo,
@@ -53,7 +52,7 @@ router.get('/:press', async (req, res) => {
     }
   } catch (error) {
     res.status(404).json({
-      status : "error",
+      status : "404",
       message : {
         detail : "404 Not Found",
         error : error
@@ -66,6 +65,7 @@ const getLogo = async (pressIndex) => {
   try {
     const url = `https://media.naver.com/press/${pressIndex}`
     const html = await axios.get(url);
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const $ = cheerio.load(html.data);
     const selector = 'body > div.press_wrap > div > section.press_content > header > div.press_hd_main > div > div.press_hd_ci > a.press_hd_ci_image > img';
@@ -81,6 +81,7 @@ const getNews = async (pressIndex) => {
   try {
     const url = `https://media.naver.com/press/${pressIndex}/ranking?type=popular`;
     const newsHtml = await axios.get(url);
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const $ = cheerio.load(newsHtml.data);
     const listSelector = '#ct > div.press_ranking_home > div:nth-child(3) > ul > li';
